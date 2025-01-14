@@ -1,42 +1,22 @@
 import PropTypes from "prop-types";
-import { useEffect, useState, useContext, useMemo } from "react";
-import {
-  Card,
-  Text,
-  Group,
-  Stack,
-  Loader,
-  Button,
-  Flex,
-  Center,
-  FileInput,
-  Textarea,
-  Select,
-  CheckIcon,
-} from "@mantine/core";
-import { Paperclip } from "@phosphor-icons/react";
 import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { Card, Text, Group, Stack, Loader, Button } from "@mantine/core";
+import { Paperclip } from "@phosphor-icons/react";
 import { useForm } from "@mantine/form";
-import { DesignationsContext } from "../helper/designationContext";
-import classes from "../iwd.module.css";
 import { host } from "../../../routes/globalRoutes/index";
-import { GetFileData, HandleDirectorApproval } from "../handlers/handlers";
+import { GetFileData } from "../handlers/handlers";
+import DeanProcess from "./FileActions/DeanProcess";
+import DirectorApproval from "./FileActions/DirectorApproval";
+import EngineerProcess from "./FileActions/EngineerProcess";
+import ProcessBill from "./FileActions/ProcessBill";
 
 export default function ViewRequestFile({ request, handleBackToList }) {
   const [loading, setLoading] = useState(true);
   const [messages, setMessages] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [fileAction, setFileAction] = useState(0);
   const role = useSelector((state) => state.user.role);
-  const designations = useContext(DesignationsContext);
-  const designationsList = useMemo(
-    () =>
-      designations.map(
-        (designation) =>
-          `${designation.designation.name}|${designation.username}`,
-      ),
-    [designations],
-  );
+
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -48,12 +28,41 @@ export default function ViewRequestFile({ request, handleBackToList }) {
       designation: (value) => (value ? null : "Field is required"),
     },
   });
+
+  const fileActionsList = [
+    <br />,
+    <DeanProcess
+      handleBackToList={handleBackToList}
+      form={form}
+      request={request}
+    />,
+    <EngineerProcess
+      handleBackToList={handleBackToList}
+      form={form}
+      request={request}
+    />,
+    <DirectorApproval
+      handleBackToList={handleBackToList}
+      form={form}
+      request={request}
+    />,
+    <ProcessBill
+      handleBackToList={handleBackToList}
+      form={form}
+      request={request}
+    />,
+  ];
   useEffect(() => {
     GetFileData({ form, setLoading, request, setMessages });
+    if (role === "Director" && request.directorApproval === 0) {
+      setFileAction(3);
+    } else if (role === "Dean (P&D)" && request.processed_by_dean === 0) {
+      setFileAction(1);
+    } else {
+      setFileAction(2);
+    }
   }, []);
-  console.log(messages);
   return (
-    /* eslint-disable react/jsx-props-no-spreading */
     <div
       style={{
         padding: "10px",
@@ -128,138 +137,26 @@ export default function ViewRequestFile({ request, handleBackToList }) {
                 </Card>
               ))}
             </Stack>
-            {request.processed_by_director === 0 ? (
-              <form>
-                <Flex gap="xs">
-                  <FileInput
-                    label="Upload your file"
-                    placeholder="Choose a file"
-                    key={form.key("file")}
-                    my="sm"
-                    {...form.getInputProps("file")}
-                  />
-                </Flex>
-                <Flex direction="column" gap="xl">
-                  <Textarea
-                    placeholder="Remarks"
-                    variant="filled"
-                    mt="sm"
-                    style={{ width: "100%" }}
-                    key={form.key("remarks")}
-                    {...form.getInputProps("remarks")}
-                    backgroundColor="#efefef"
-                    cols={50}
-                    rows={3}
-                  />
-                  <Flex direction="column" gap="xs" justify="flex-start">
-                    <Select
-                      mb="sm"
-                      comboboxProps={{ withinPortal: true }}
-                      data={designationsList}
-                      placeholder="Director(Dir)"
-                      label="designation"
-                      classNames={classes}
-                      key={form.key("designation")}
-                      {...form.getInputProps("designation")}
-                      required
-                    />
-                  </Flex>
-                </Flex>
-                <Flex gap="xs" my="10px">
-                  <Button
-                    size="sm"
-                    variant="filled"
-                    color="black"
-                    type="submit"
-                    style={{
-                      width: "auto",
-                      backgroundColor: "#1E90FF",
-                      color: isSuccess ? "black" : "white",
-                      border: "none",
-                      borderRadius: "20px",
-                    }}
-                    disabled={isLoading || isSuccess}
-                    onClick={() => {
-                      HandleDirectorApproval({
-                        form,
-                        request,
-                        setIsLoading,
-                        setIsSuccess,
-                        handleBackToList,
-                        action: "approve",
-                        role,
-                      });
-                    }}
-                  >
-                    {isLoading ? (
-                      <Center>
-                        <Loader color="black" size="xs" />
-                      </Center>
-                    ) : isSuccess ? (
-                      <Center>
-                        <CheckIcon size="16px" color="black" />
-                      </Center>
-                    ) : (
-                      "Approve File"
-                    )}
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="filled"
-                    color="black"
-                    type="submit"
-                    style={{
-                      width: "auto",
-                      backgroundColor: "#1E90FF",
-                      color: isSuccess ? "black" : "white",
-                      border: "none",
-                      borderRadius: "20px",
-                    }}
-                    disabled={isLoading || isSuccess}
-                    onClick={() => {
-                      HandleDirectorApproval({
-                        form,
-                        request,
-                        setIsLoading,
-                        setIsSuccess,
-                        handleBackToList,
-                        action: "reject",
-                        role,
-                      });
-                    }}
-                  >
-                    {isLoading ? (
-                      <Center>
-                        <Loader color="black" size="xs" />
-                      </Center>
-                    ) : isSuccess ? (
-                      <Center>
-                        <CheckIcon size="16px" color="black" />
-                      </Center>
-                    ) : (
-                      "Reject File"
-                    )}
-                  </Button>
-                </Flex>
-              </form>
-            ) : null}
+            {fileActionsList[fileAction]}
           </>
         )}
       </Card>
     </div>
-    /* eslint-enable react/jsx-props-no-spreading */
   );
 }
 
 ViewRequestFile.propTypes = {
   request: PropTypes.shape({
     request_id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    area: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    requestCreatedBy: PropTypes.string.isRequired,
+    name: PropTypes.string,
+    area: PropTypes.string,
+    description: PropTypes.string,
+    requestCreatedBy: PropTypes.string,
     file_id: PropTypes.number.isRequired,
-    processed_by_director: PropTypes.number.isRequired,
+    directorApproval: PropTypes.number,
+    processed_by_dean: PropTypes.number,
+    issuedWorkOrder: PropTypes.number,
+    workCompleted: PropTypes.number,
   }).isRequired,
   handleBackToList: PropTypes.func.isRequired,
 };

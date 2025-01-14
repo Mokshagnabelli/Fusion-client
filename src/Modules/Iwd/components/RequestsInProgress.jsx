@@ -11,7 +11,10 @@ import {
   CheckIcon,
 } from "@mantine/core";
 import { IWD_ROUTES } from "../routes/iwdRoutes";
-import { GetRequests, HandleMarkAsCompleted } from "../handlers/handlers";
+import {
+  GetRequestsOrBills,
+  HandleMarkAsCompleted,
+} from "../handlers/handlers";
 
 function RequestsInProgress() {
   const [loading, setLoading] = useState(false);
@@ -33,9 +36,9 @@ function RequestsInProgress() {
   };
 
   useEffect(() => {
-    GetRequests({
+    GetRequestsOrBills({
       setLoading,
-      setRequestsList: setRequestsInProgress,
+      setList: setRequestsInProgress,
       role,
       URL: IWD_ROUTES.REQUESTS_IN_PROGRESS,
     });

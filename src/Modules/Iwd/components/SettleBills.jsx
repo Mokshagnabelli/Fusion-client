@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Table, Button, Container, Group, Title } from "@mantine/core";
 import ViewRequestFile from "./ViewRequestFile";
 
-function ProcessedBills() {
+function SettleBills() {
   const [selectedBill, setSelectedBill] = useState(null);
   const handleViewFile = (bill) => {
     // TODO:
@@ -112,4 +112,4 @@ function ProcessedBills() {
   );
 }
 
-export default ProcessedBills;
+export default SettleBills;

@@ -39,7 +39,7 @@ function IwdPage() {
       { title: "IWD", href: "/iwd" },
       { title: currentTab.title, href: "#" },
     ].map((item, index) => (
-      <Text key={index} component="a" href={item.href} size="sm">
+      <Text key={index} component="a" href={item.href} size="16px" fw={600}>
         {item.title}
       </Text>
     ));

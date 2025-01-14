@@ -12,14 +12,15 @@ import {
   NumberInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import { DateInput } from "@mantine/dates";
 import PropTypes from "prop-types";
+import { DateInput } from "@mantine/dates";
 import classes from "./EngineerIssueWorkOrder.module.css";
 import { HandleIssueWorkOrder } from "../handlers/handlers";
 
 function IssueWorkOrderForm({ workOrder, onBack }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -83,7 +84,7 @@ function IssueWorkOrderForm({ workOrder, onBack }) {
                   <Flex direction="column" gap="xs">
                     <TextInput
                       label="Request ID"
-                      readOnly
+                      disabled
                       classNames={classes}
                       key={form.key("request_id")}
                       {...form.getInputProps("request_id")}
@@ -94,7 +95,7 @@ function IssueWorkOrderForm({ workOrder, onBack }) {
                   <Flex direction="column" gap="xs">
                     <TextInput
                       label="Request Name"
-                      readOnly
+                      disabled
                       classNames={classes}
                       key={form.key("name")}
                       {...form.getInputProps("name")}
@@ -114,6 +115,30 @@ function IssueWorkOrderForm({ workOrder, onBack }) {
                       {...form.getInputProps("date")}
                       valueFormat="YYYY-MM-DD"
                       size="xs"
+                      styles={{
+                        calendarHeader: {
+                          // backgroundColor: "#e0f7fa",
+                          color: "#1E90FF",
+                          fontSize: "16px",
+                          width: "300px",
+                          display: "flex",
+                          height: "",
+                          fontWeight: "bold",
+                        },
+                        calendarHeaderIcon: {
+                          color: "#00796b",
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                        },
+                        dropdown: {
+                          width: "300px",
+                          maxHeight: "350px",
+                          overflow: "auto",
+                        },
+                        calendar: {
+                          fontSize: "14px",
+                        },
+                      }}
                     />
                   </Flex>
                 </Grid.Col>
@@ -172,14 +197,13 @@ function IssueWorkOrderForm({ workOrder, onBack }) {
               <Grid columns="1" style={{ width: "100%" }}>
                 <Grid.Col span={1}>
                   <Flex direction="column" gap="xs">
-                    <DateInput
+                    {/* <DateInput
                       label="Start Date"
                       placeholder="yyyy/mm/dd"
                       classNames={classes}
                       key={form.key("start_date")}
                       {...form.getInputProps("start_date")}
                       valueFormat="YYYY-MM-DD"
-                      required
                       styles={{
                         dropdown: {
                           width: "100px",
@@ -191,6 +215,40 @@ function IssueWorkOrderForm({ workOrder, onBack }) {
                           width: "100px",
                         },
                       }}
+                      required
+                    /> */}
+                    <DateInput
+                      label="Start Date"
+                      placeholder="yyyy/mm/dd"
+                      classNames={classes}
+                      key={form.key("start_date")}
+                      {...form.getInputProps("start_date")}
+                      valueFormat="YYYY-MM-DD"
+                      styles={{
+                        calendarHeader: {
+                          // backgroundColor: "#e0f7fa",
+                          color: "#1E90FF",
+                          fontSize: "16px",
+                          width: "300px",
+                          display: "flex",
+                          height: "",
+                          fontWeight: "bold",
+                        },
+                        calendarHeaderIcon: {
+                          color: "#1E90FF",
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                        },
+                        dropdown: {
+                          width: "300px",
+                          maxHeight: "350px",
+                          overflow: "auto",
+                        },
+                        calendar: {
+                          fontSize: "14px",
+                        },
+                      }}
+                      required
                     />
                   </Flex>
                 </Grid.Col>
@@ -203,8 +261,21 @@ function IssueWorkOrderForm({ workOrder, onBack }) {
                       key={form.key("completion_date")}
                       {...form.getInputProps("completion_date")}
                       valueFormat="YYYY-MM-DD"
-                      required
                       styles={{
+                        calendarHeader: {
+                          // backgroundColor: "#e0f7fa",
+                          color: "#1E90FF",
+                          fontSize: "16px",
+                          width: "300px",
+                          display: "flex",
+                          height: "",
+                          fontWeight: "bold",
+                        },
+                        calendarHeaderIcon: {
+                          color: "#00796b",
+                          fontSize: "20px",
+                          fontWeight: "bold",
+                        },
                         dropdown: {
                           width: "300px",
                           maxHeight: "350px",
@@ -214,25 +285,13 @@ function IssueWorkOrderForm({ workOrder, onBack }) {
                           fontSize: "14px",
                         },
                       }}
+                      required
                     />
-                    {/* <DatePickerInput
-                      label="Select a date"
-                      placeholder="Pick a date"
-                      valueFormat="YYYY-MM-DD"
-                      styles={{
-                        root: { width: "100%" },
-                        input: {
-                          width: "100%",
-                          padding: "8px",
-                          fontSize: "1px",
-                        },
-                      }} */}
-                    {/* /> */}
                   </Flex>
                 </Grid.Col>
               </Grid>
 
-              <Flex direction="row-reverse" gap="xs">
+              <Flex direction="row" gap="xs">
                 <Button
                   size="sm"
                   variant="filled"
@@ -259,19 +318,6 @@ function IssueWorkOrderForm({ workOrder, onBack }) {
                     "Submit"
                   )}
                 </Button>
-                <Button
-                  size="sm"
-                  variant="filled"
-                  color="#1E90FF"
-                  onClick={onBack}
-                  disabled={isLoading || isSuccess}
-                  style={{
-                    border: "none",
-                    borderRadius: "20px",
-                  }}
-                >
-                  Back
-                </Button>
               </Flex>
             </Flex>
           </Paper>
@@ -284,7 +330,7 @@ function IssueWorkOrderForm({ workOrder, onBack }) {
 
 IssueWorkOrderForm.propTypes = {
   workOrder: PropTypes.shape({
-    id: PropTypes.string.isRequired,
+    id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     description: PropTypes.string,
     area: PropTypes.string,

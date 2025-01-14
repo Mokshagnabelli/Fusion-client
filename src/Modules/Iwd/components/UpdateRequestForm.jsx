@@ -19,7 +19,7 @@ import { DesignationsContext } from "../helper/designationContext";
 import classes from "../iwd.module.css";
 import { HandleUpdateRequest } from "../handlers/handlers";
 
-function UpdateRequestForm({ selectedRequest, onBack, setActiveTab }) {
+function UpdateRequestForm({ selectedRequest, onBack }) {
   const role = useSelector((state) => state.user.role);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -37,6 +37,7 @@ function UpdateRequestForm({ selectedRequest, onBack, setActiveTab }) {
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
+      id: selectedRequest.id,
       name: selectedRequest.name,
       description: selectedRequest.description,
       area: selectedRequest.area,
@@ -52,15 +53,15 @@ function UpdateRequestForm({ selectedRequest, onBack, setActiveTab }) {
 
   return (
     /* eslint-disable react/jsx-props-no-spreading */
-    <Grid mt="xl">
-      <div className="container">
+    <Grid mt="xs">
+      <div className="container" style={{ padding: "5px" }}>
         <form
           onSubmit={form.onSubmit((formValues) => {
             if (form.validate(formValues))
               HandleUpdateRequest({
                 setIsLoading,
                 setIsSuccess,
-                setActiveTab,
+                onBack,
                 role,
                 formValues,
               });
@@ -73,9 +74,10 @@ function UpdateRequestForm({ selectedRequest, onBack, setActiveTab }) {
             pb="md"
             style={{
               borderLeft: "0.6rem solid #15ABFF",
-              width: "30vw",
+              width: "60vw",
               minHeight: "45vh",
               maxHeight: "70vh",
+              boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.15)",
             }}
             withBorder
             maw="1240px"
@@ -90,6 +92,17 @@ function UpdateRequestForm({ selectedRequest, onBack, setActiveTab }) {
                 <Title size="26px" style={{ fontWeight: "bold" }}>
                   Update Request
                 </Title>
+              </Flex>
+
+              <Flex direction="column" gap="xs" justify="flex-start">
+                <TextInput
+                  label="ID"
+                  placeholder=""
+                  classNames={classes}
+                  key={form.key("id")}
+                  {...form.getInputProps("id")}
+                  disabled
+                />
               </Flex>
 
               <Flex direction="column" gap="xs" justify="flex-start">
@@ -201,7 +214,6 @@ UpdateRequestForm.propTypes = {
     description: PropTypes.string,
     area: PropTypes.string,
   }).isRequired,
-  setActiveTab: PropTypes.func.isRequired,
   onBack: PropTypes.func.isRequired,
 };
 

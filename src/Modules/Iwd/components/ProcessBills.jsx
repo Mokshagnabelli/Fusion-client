@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Container, Table, Button, Title, Loader, Grid } from "@mantine/core";
 import { CaretLeft } from "@phosphor-icons/react";
-import ViewRequestFile from "./ViewRequestFile";
-import { IWD_ROUTES } from "../routes/iwdRoutes";
 import { GetRequestsOrBills } from "../handlers/handlers";
+import { IWD_ROUTES } from "../routes/iwdRoutes";
+import ViewRequestFile from "./ViewRequestFile";
 
-function ApproveRejectRequest() {
+function ProcessBills() {
   const role = useSelector((state) => state.user.role);
   const [loading, setLoading] = useState(false);
   const [refresh, setRefresh] = useState(false);
@@ -26,9 +26,10 @@ function ApproveRejectRequest() {
       setLoading,
       setList: setRequestsList,
       role,
-      URL: IWD_ROUTES.DEAN_PROCESSED_REQUESTS,
+      URL: IWD_ROUTES.WORK_UNDER_PROGRESS,
     });
   }, [role, refresh]);
+  console.log(createdRequestsList);
   return (
     <Container style={{ padding: "10px", fontFamily: "Arial, sans-serif" }}>
       <br />
@@ -48,10 +49,10 @@ function ApproveRejectRequest() {
             borderLeft: "10px solid #1E90FF",
           }}
         >
-          <Title align="center" size="26px" style={{ marginBottom: "10px" }}>
-            Approve/Reject Request
+          <Title size="26px" align="center" mb="md">
+            Work Under Progress
           </Title>
-          <Table highlightOnHover>
+          <Table highlightOnHover withBorder withColumnBorders>
             <thead style={{ backgroundColor: "#f5f5f5" }}>
               <tr>
                 <th>ID</th>
@@ -63,9 +64,10 @@ function ApproveRejectRequest() {
               </tr>
             </thead>
             <tbody>
+              {/* {hardcoded.map((request, index) => ( */}
               {createdRequestsList.map((request, index) => (
-                <tr key={index} id={request.request_id}>
-                  <td>{request.request_id}</td>
+                <tr key={index} id={request.id}>
+                  <td>{request.id}</td>
                   <td>{request.name}</td>
                   <td>{request.description}</td>
                   <td>{request.area}</td>
@@ -104,4 +106,4 @@ function ApproveRejectRequest() {
   );
 }
 
-export default ApproveRejectRequest;
+export default ProcessBills;

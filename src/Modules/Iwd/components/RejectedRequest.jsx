@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 import { Container, Table, Button, Title, Loader, Grid } from "@mantine/core";
 import UpdateRequestForm from "./UpdateRequestForm";
 import { IWD_ROUTES } from "../routes/iwdRoutes";
-import { GetRequests } from "../handlers/handlers";
+import { GetRequestsOrBills } from "../handlers/handlers";
 
-function RejectedRequest({ setActiveTab }) {
+function RejectedRequest() {
   const role = useSelector((state) => state.user.role);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [rejectedRequests, setRejectedRequests] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
   const handleRequestSelect = (request) => {
     setSelectedRequest(request);
@@ -18,16 +18,17 @@ function RejectedRequest({ setActiveTab }) {
 
   const handleBackToList = () => {
     setSelectedRequest(null);
+    setRefresh((prev) => !prev);
   };
 
   useEffect(() => {
-    GetRequests({
+    GetRequestsOrBills({
       setLoading,
-      setRequestsList: setRejectedRequests,
+      setList: setRejectedRequests,
       role,
       URL: IWD_ROUTES.REJECTED_REQUESTS,
     });
-  }, []);
+  }, [role, refresh]);
 
   return (
     <Container style={{ padding: "10px" }}>
@@ -96,15 +97,11 @@ function RejectedRequest({ setActiveTab }) {
       ) : (
         <UpdateRequestForm
           selectedRequest={selectedRequest}
-          setActiveTab={setActiveTab}
           onBack={handleBackToList}
         />
       )}
     </Container>
   );
 }
-RejectedRequest.propTypes = {
-  setActiveTab: PropTypes.func.isRequired,
-};
 
 export default RejectedRequest;

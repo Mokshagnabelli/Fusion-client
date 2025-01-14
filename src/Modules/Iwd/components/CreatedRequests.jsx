@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Container, Table, Button, Title, Loader, Grid } from "@mantine/core";
 import { CaretLeft } from "@phosphor-icons/react";
 import ViewRequestFile from "./ViewRequestFile";
-import { GetRequests } from "../handlers/handlers";
+import { GetRequestsOrBills } from "../handlers/handlers";
 import { IWD_ROUTES } from "../routes/iwdRoutes";
 
 function CreatedRequests() {
@@ -22,9 +22,9 @@ function CreatedRequests() {
 
   const [createdRequestsList, setRequestsList] = useState([]);
   useEffect(() => {
-    GetRequests({
+    GetRequestsOrBills({
       setLoading,
-      setRequestsList,
+      setList: setRequestsList,
       role,
       URL: IWD_ROUTES.CREATED_REQUESTS,
     });
@@ -67,7 +67,7 @@ function CreatedRequests() {
             <tbody>
               {/* {hardcoded.map((request, index) => ( */}
               {createdRequestsList.map((request, index) => (
-                <tr key={index} id={request.id}>
+                <tr key={index} id={request.request_id}>
                   <td>{request.request_id}</td>
                   <td>{request.name}</td>
                   <td>{request.description}</td>
@@ -77,7 +77,11 @@ function CreatedRequests() {
                     <Button
                       size="xs"
                       onClick={() => handleViewRequest(request)}
-                      style={{ backgroundColor: "#1E90FF", color: "white" }}
+                      style={{
+                        backgroundColor: "#1E90FF",
+                        color: "white",
+                        borderRadius: "20px",
+                      }}
                     >
                       View File
                     </Button>

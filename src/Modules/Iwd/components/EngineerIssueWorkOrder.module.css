@@ -45,3 +45,9 @@
     align-items: center;
     justify-content: space-around;
 }
+
+.CalenderHeader{
+        font-size: 5px; 
+        padding: 10px;
+        /* backgroundColor: ' */
+}

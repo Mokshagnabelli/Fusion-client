@@ -1,59 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import {
-  Container,
-  Table,
-  Button,
-  Title,
-  Loader,
-  Grid,
-  Modal,
-} from "@mantine/core";
-// import { CaretLeft } from "@phosphor-icons/react";
+import { Container, Table, Button, Title, Loader, Grid } from "@mantine/core";
+import { CaretLeft } from "@phosphor-icons/react";
 import ViewRequestFile from "./ViewRequestFile";
-import { GetAuditDocuments } from "../handlers/handlers";
+import { GetRequestsOrBills } from "../handlers/handlers";
+import { IWD_ROUTES } from "../routes/iwdRoutes";
 
 function AuditDocuments() {
   const role = useSelector((state) => state.user.role);
   const [loading, setLoading] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState(null);
-  const [modalOpened, setModalOpened] = useState(false);
-  const [auditDocumentsList, setAuditDocumentsList] = useState([]); // Initialize state for auditDocumentsList
-
-  // Dummy data is commented out
-  // const auditDocumentsList = [
-  //   {
-  //     requestId: 1,
-  //     fileUrl: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-  //     file: "Sample PDF 1",
-  //   },
-  //   {
-  //     requestId: 2,
-  //     fileUrl: "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-pdf-file.pdf",
-  //     file: "Sample PDF 2",
-  //   },
-  //   {
-  //     requestId: 3,
-  //     fileUrl: "https://www.africau.edu/images/default/sample.pdf",
-  //     file: "Sample PDF 3",
-  //   },
-  // ];
+  const [refresh, setRefresh] = useState(false);
+  const [auditDocumentsList, setAuditDocumentsList] = useState([]);
 
   const handleViewDocument = (document) => {
     setSelectedDocument(document);
-    setModalOpened(true);
   };
 
-  const handleCloseModal = () => {
+  const handleBackToList = () => {
     setSelectedDocument(null);
-    setModalOpened(false);
+    setRefresh((prev) => !prev);
   };
-  // TODO:FIXME:
   useEffect(() => {
     if (role) {
-      GetAuditDocuments({ setLoading, setAuditDocumentsList, role });
+      GetRequestsOrBills({
+        setLoading,
+        setList: setAuditDocumentsList,
+        role,
+        URL: IWD_ROUTES.AUDIT_DOCUMENTS_VIEW,
+      });
     }
-  }, [role]);
+  }, [role, refresh]);
 
   return (
     <Container style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
@@ -64,7 +41,7 @@ function AuditDocuments() {
             <Loader size="lg" />
           </Container>
         </Grid>
-      ) : (
+      ) : !selectedDocument ? (
         <div
           style={{
             border: "1px solid #ccc",
@@ -87,8 +64,8 @@ function AuditDocuments() {
             </thead>
             <tbody>
               {auditDocumentsList.map((document, index) => (
-                <tr key={index} id={document.requestId}>
-                  <td>{document.requestId}</td>
+                <tr key={index} id={document.request_id}>
+                  <td>{document.request_id}</td>
                   <td>{document.file}</td>
                   <td>
                     <Button
@@ -104,16 +81,22 @@ function AuditDocuments() {
             </tbody>
           </Table>
         </div>
+      ) : (
+        <>
+          <Button
+            variant="subtle"
+            leftIcon={<CaretLeft size={12} />}
+            onClick={handleBackToList}
+            style={{ marginBottom: "10px" }}
+          >
+            Back to List
+          </Button>
+          <ViewRequestFile
+            request={selectedDocument}
+            handleBackToList={handleBackToList}
+          />
+        </>
       )}
-
-      <Modal
-        opened={modalOpened}
-        onClose={handleCloseModal}
-        size="xl"
-        title="View Document"
-      >
-        {selectedDocument && <ViewRequestFile request={selectedDocument} />}
-      </Modal>
     </Container>
   );
 }

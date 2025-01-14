@@ -4,7 +4,7 @@ import { Container, Table, Button, Title, Loader, Grid } from "@mantine/core";
 import { CaretLeft } from "@phosphor-icons/react";
 import ViewRequestFile from "./ViewRequestFile";
 import { IWD_ROUTES } from "../routes/iwdRoutes";
-import { GetRequests } from "../handlers/handlers";
+import { GetRequestsOrBills } from "../handlers/handlers";
 
 function CreatedRequests() {
   const role = useSelector((state) => state.user.role);
@@ -22,9 +22,9 @@ function CreatedRequests() {
 
   const [createdRequestsList, setRequestsList] = useState([]);
   useEffect(() => {
-    GetRequests({
+    GetRequestsOrBills({
       setLoading,
-      setRequestsList,
+      setList: setRequestsList,
       role,
       URL: IWD_ROUTES.REQUESTS_STATUS,
     });
@@ -66,7 +66,7 @@ function CreatedRequests() {
             </thead>
             <tbody>
               {createdRequestsList.map((request, index) => (
-                <tr key={index} id={request.id}>
+                <tr key={index} id={request.request_id}>
                   <td>{request.request_id}</td>
                   <td>{request.name}</td>
                   <td>{request.description}</td>

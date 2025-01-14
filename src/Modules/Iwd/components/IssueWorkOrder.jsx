@@ -2,56 +2,34 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Table, Button, Container, Title, Loader, Grid } from "@mantine/core";
 import { CaretLeft } from "@phosphor-icons/react";
-import PropTypes from "prop-types";
 import IssueWorkOrderForm from "./IssueWorkOrderForm";
 import { IWD_ROUTES } from "../routes/iwdRoutes";
-import { GetRequests } from "../handlers/handlers";
+import { GetRequestsOrBills } from "../handlers/handlers";
 
-function IssueWorkOrder({ setActiveTab }) {
+function IssueWorkOrder() {
   const role = useSelector((state) => state.user.role);
   const [selectedWorkOrder, setSelectedWorkOrder] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+
   const handleWorkOrderSelect = (workOrder) => {
     setSelectedWorkOrder(workOrder);
   };
 
   const handleBackToList = () => {
-    setActiveTab("0");
+    setSelectedWorkOrder(null);
+    setRefresh((prev) => !prev);
   };
 
   const [issueworkorderList, setissueworkorderList] = useState([]);
   useEffect(() => {
-    // const getCreatedRequests = async () => {
-    //   setLoading(true);
-    //   const token = localStorage.getItem("authToken");
-    //   try {
-    //     const response = await axios.get(
-    //       IWD_ROUTES.DIRECTOR_APPROVED_REQUESTS,
-    //       {
-    //         headers: {
-    //           Authorization: `Token ${token}`,
-    //         },
-    //         params: {
-    //           role,
-    //         },
-    //       },
-    //     );
-    //     setissueworkorderList(response.data.requests);
-    //     console.log(response);
-    //     console.log(response.data.requests);
-
-    //     setLoading(false);
-    //   } catch (error) {
-    //     console.error(error);
-    //   }
-    // };
-    GetRequests({
+    GetRequestsOrBills({
       setLoading,
-      setRequestsList: setissueworkorderList,
+      setList: setissueworkorderList,
       role,
       URL: IWD_ROUTES.DIRECTOR_APPROVED_REQUESTS,
     });
-  }, [role]);
+  }, [role, refresh]);
   console.log(issueworkorderList);
 
   return (
@@ -79,7 +57,7 @@ function IssueWorkOrder({ setActiveTab }) {
               align="center"
               style={{ marginBottom: "10px", padding: "10px" }}
             >
-              Work Orders
+              Issue Work Order
             </Title>
             <Table highlightOnHover>
               <thead style={{ backgroundColor: "#f5f5f5" }}>
@@ -138,7 +116,5 @@ function IssueWorkOrder({ setActiveTab }) {
     </Container>
   );
 }
-IssueWorkOrder.propTypes = {
-  setActiveTab: PropTypes.func.isRequired,
-};
+
 export default IssueWorkOrder;
